@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Hit The Ball</title>
     <link rel="stylesheet" type="text/css" href="assets/css/hitball.css" />
-    <script data-main="assets/js/game.js" src="assets/js/require.js" defer></script>
   </head>
   <body id="top">
     <h1 id="title">Hit the ball</h1>
@@ -13,13 +12,14 @@
       Game is over when you got 10 points.
     </p>
     <h5><span class="subtitle">Points :</span> <span id="points">0</span><br/ ></h5>
-    <p>
-      <canvas id="ball" visible="hidden" width="30" height="30"></canvas>
-      <br />
-      <canvas id="zone" width="400" height="300">
+    <canvas id="zone" width="400" height="300">
+      <p>
 	Your web browser doesn't seem to support HTML 5 canvas property.<br />
 	You should upgrade.
-      </canvas>
-    </p>
+      </p>
+    </canvas>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/jcanvas.js"></script>
+    <script src="assets/js/game.js"></script>
   </body>
 </html>

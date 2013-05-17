@@ -1,30 +1,14 @@
-requirejs.config({
-    shim: {
-	'prototype': {},
-	'jquery': {
-	    export: '$'
-	},
-	// 'jcanvas': {
-	//     deps: 'jquery',
-	//     export: '$'
-	// }
-    }
-});
-
-require(["jquery", // "jcanvas",
-	 "prototype", "hitballgame"], function(j, // j2,
-					       p, h) {
-    if (typeof j !== 'undefined' &&
-	// typeof j2 !== 'undefined' &&
-	typeof h !== 'undefined') {
-	console.log("jquery (" + j + "), jcanvas (" + // j2 +
-		    "), prototype and hitballgame (" + h + ") modules are loaded.");
-    }
-});
-
-define(["jquery", "hitballgame"], function($, HitBallGame) {
+$(function() {
     var clr = "#FF0000";
     var altclr = "#00FF00";
+    var xcoord = 42;
+    var ycoord = 42;
+    var ballradius = 15;
+    var dx = 1;
+    var dy = 1;
+    var zwidth = parseInt($('#zone').attr("width"));
+    var zheight = parseInt($('#zone').attr("height"));
+    var points = parseInt($('#points').text());
 
     $("#title").mouseover(function() {
 	this.style.color = altclr;
@@ -33,26 +17,56 @@ define(["jquery", "hitballgame"], function($, HitBallGame) {
 	this.style.color = clr;
     });
 
-    if (typeof HitBallGame !== 'undefined') {
-	var game = new HitBallGame();
-	var x = 42;
-	var y = 42;
-	var dx = 10;
-	var dy = 10;
-
-	window.setInterval(function() {
-	    game.clear();
-	    if (game.outOfZone('width', dx) == true) {
-		dx = -1 * dx;
+    function draw() {
+	$("#zone").clearCanvas();
+	$("#zone").drawRect({
+	    layer: true,
+	    strokeStyle: "black",
+	    strokeWidth: 2,
+	    x: 0,
+	    y: 0,
+	    width: zwidth,
+	    height: zheight,
+	    fromCenter: false
+	});
+	// Si on sort de la zone inverser le x ou le y
+	$("#zone").drawArc({
+	    layer: true,
+	    fillStyle: "#FF0000",
+	    x: xcoord,
+	    y: ycoord,
+	    radius: ballradius,
+	    click: function(layer) {
+		points += 1;
+		$('#points').text(points.toString());
 	    }
-	    if (game.outOfZone('heigth', dy) == true) {
-		dy = -1 * dy;
-	    }
-	    game.draw(x, y);
-	    x += dx;
-	    y += dy;
-	}, 60);
-    } else {
-	console.log("Error : HitBallGame object isn't defined.");
+	});
+	xcoord += dx;
+	ycoord += dy;
     }
+
+    $("#zone").drawRect({
+	layer: true,
+	strokeStyle: "black",
+	strokeWidth: 2,
+	x: 0,
+	y: 0,
+	width: zwidth,
+	height: zheight,
+	fromCenter: false,
+	click: function(layer) {
+	    window.setInterval(draw, 60);
+	    $('#points').text(points.toString());
+	}
+    }).drawArc({
+	layer: true,
+	fillStyle: "#FF0000",
+	x: xcoord,
+	y: ycoord,
+	radius: ballradius,
+	click: function(layer) {
+	    window.setInterval(draw, 60);
+	    $('#points').text(points.toString());
+	}
+    });
 });
