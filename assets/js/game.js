@@ -1,72 +1,85 @@
 $(function() {
-    var clr = "#FF0000";
-    var altclr = "#00FF00";
-    var xcoord = 42;
-    var ycoord = 42;
-    var ballradius = 15;
-    var dx = 1;
-    var dy = 1;
-    var zwidth = parseInt($('#zone').attr("width"));
-    var zheight = parseInt($('#zone').attr("height"));
-    var points = parseInt($('#points').text());
+  const ballColor = '#FF0000';
+  const ballRadius = 15;
 
-    $("#title").mouseover(function() {
-	this.style.color = altclr;
-    });
-    $("#title").mouseout(function() {
-	this.style.color = clr;
-    });
+  let xcoord = 42;
+  let ycoord = 42;
+  let dx = 1;
+  let dy = 1;
 
-    function draw() {
-	$("#zone").clearCanvas();
-	$("#zone").drawRect({
-	    layer: true,
-	    strokeStyle: "black",
-	    strokeWidth: 2,
-	    x: 0,
-	    y: 0,
-	    width: zwidth,
-	    height: zheight,
-	    fromCenter: false
-	});
-	// Si on sort de la zone inverser le x ou le y
-	$("#zone").drawArc({
-	    layer: true,
-	    fillStyle: "#FF0000",
-	    x: xcoord,
-	    y: ycoord,
-	    radius: ballradius,
-	    click: function(layer) {
-		points += 1;
-		$('#points').text(points.toString());
-	    }
-	});
-	xcoord += dx;
-	ycoord += dy;
+  const $zone = $('#zone');
+  const $points = $('#points');
+  const zoneWidth = parseInt($zone.attr('width'));
+  const zoneHeight = parseInt($zone.attr('height'));
+  let points = parseInt($points.text());
+  let intervalId = undefined;
+
+  function startGame(_layer) {
+    console.log("<startGame>");
+    if (intervalId == undefined) {
+      intervalId = window.setInterval(draw, 60);
+      $points.text(points.toString());
     }
+    console.log("</startGame>");
+  }
 
-    $("#zone").drawRect({
-	layer: true,
-	strokeStyle: "black",
-	strokeWidth: 2,
-	x: 0,
-	y: 0,
-	width: zwidth,
-	height: zheight,
-	fromCenter: false,
-	click: function(layer) {
-	    window.setInterval(draw, 60);
-	    $('#points').text(points.toString());
-	}
-    }).drawArc({
-	layer: true,
-	fillStyle: "#FF0000",
-	x: xcoord,
-	y: ycoord,
-	radius: ballradius,
-	click: function(layer) {
-	    window.setInterval(draw, 60);
-	    $('#points').text(points.toString());
-	}
+  function increasePoints(_layer) {
+    console.log("<increasePoints>");
+    points += 1;
+    $points.text(points.toString());
+    console.log("</increasePoints>");
+  }
+
+  function drawZone(clickCb) {
+    $zone.drawRect({
+      layer: true,
+      strokeStyle: 'black',
+      strokeWidth: 2,
+      x: 0,
+      y: 0,
+      width: zoneWidth,
+      height: zoneHeight,
+      fromCenter: false,
+      click: clickCb
     });
+  }
+
+  function checkForCollisions() {
+    // TODO
+  }
+
+  function drawBall(clickCb) {
+    $zone.drawArc({
+      layer: true,
+      fillStyle: ballColor,
+      x: xcoord,
+      y: ycoord,
+      radius: ballRadius,
+      click: clickCb
+    });
+  }
+
+  function draw() {
+    console.log("<draw>");
+    // Reset the canvas
+    $zone.clearCanvas();
+
+    // Redraw the exact same game board
+    drawZone();
+
+    // Check for collisions and update X and/or Y direction
+    checkForCollisions();
+
+    // Draw the ball
+    drawBall(increasePoints);
+
+    // Update ball position for next interval
+    xcoord += dx;
+    ycoord += dy;
+
+    console.log("</draw>");
+  }
+
+  drawZone(startGame);
+  drawBall(startGame);
 });
