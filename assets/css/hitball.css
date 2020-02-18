@@ -1,3 +1,7 @@
+* {
+    font-family: Arial, monospace;
+}
+
 h1 {
     color: #FF0000;
 }
@@ -8,4 +12,8 @@ a {
 
 .subtitle {
     text-decoration: underline;
+}
+
+body {
+    padding: 0 10px;
 }
