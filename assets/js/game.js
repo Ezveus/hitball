@@ -1,38 +1,43 @@
 $(function() {
   const ballColor = '#FF0000';
   const ballRadius = 15;
+  const $zone = $('#zone');
+  const $points = $('#points');
+  const zoneWidth = parseInt($zone.attr('width'));
+  const zoneHeight = parseInt($zone.attr('height'));
 
   let xcoord = 42;
   let ycoord = 42;
   let dx = 1;
   let dy = 1;
-
-  const $zone = $('#zone');
-  const $points = $('#points');
-  const zoneWidth = parseInt($zone.attr('width'));
-  const zoneHeight = parseInt($zone.attr('height'));
   let points = parseInt($points.text());
   let intervalId = undefined;
+  let startedGame = false;
+  let victory = false;
 
   function startGame(_layer) {
     console.log("<startGame>");
-    if (intervalId == undefined) {
+    if (startedGame === false) {
       intervalId = window.setInterval(draw, 60);
       $points.text(points.toString());
+      startedGame = true;
     }
     console.log("</startGame>");
   }
 
   function increasePoints(_layer) {
     console.log("<increasePoints>");
-    points += 1;
-    $points.text(points.toString());
+    if (victory === false && startedGame === true) {
+      points += 1;
+      $points.text(points.toString());
+    }
     console.log("</increasePoints>");
   }
 
   function drawZone(clickCb) {
     $zone.drawRect({
       layer: true,
+      name: 'zone',
       strokeStyle: 'black',
       strokeWidth: 2,
       x: 0,
@@ -51,6 +56,7 @@ $(function() {
   function drawBall(clickCb) {
     $zone.drawArc({
       layer: true,
+      name: 'ball',
       fillStyle: ballColor,
       x: xcoord,
       y: ycoord,
@@ -59,19 +65,25 @@ $(function() {
     });
   }
 
+  function checkWinCondition() {
+    if (startedGame === true && victory === false && points === 2) {
+      victory = true;
+      // Game is won, stopping the game
+      window.clearInterval(intervalId);
+    }
+  }
+
   function draw() {
     console.log("<draw>");
-    // Reset the canvas
-    $zone.clearCanvas();
-
-    // Redraw the exact same game board
-    drawZone();
+    // Check win condition
+    checkWinCondition();
 
     // Check for collisions and update X and/or Y direction
     checkForCollisions();
 
     // Draw the ball
-    drawBall(increasePoints);
+    // drawBall(increasePoints);
+    $zone.drawLayer('ball');
 
     // Update ball position for next interval
     xcoord += dx;
